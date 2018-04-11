@@ -1,5 +1,4 @@
 require 'singleton'
-require 'byebug'
 
 class AllQ
   # Represents the client singleton
