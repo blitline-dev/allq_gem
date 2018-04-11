@@ -10,7 +10,7 @@ class AllQ
 
       result = JSON.parse(data)
       if result['job']
-        return nil if result['job'].to_s == "{}"
+        return nil if result['job'].empty?
         job = Job.new_from_hash(result['job'])
         return job
       end

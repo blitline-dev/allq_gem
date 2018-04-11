@@ -49,7 +49,6 @@ class AllQ
       _with_retry(options[:retry_interval], options[:init]) do
         @mutex.synchronize do
           _raise_not_connected! unless @connection
-          command = command.force_encoding('ASCII-8BIT') if command.respond_to?(:force_encoding)
           @connection.puts(command.to_s)
           res = @connection.readline
           yield block.call(res)
@@ -111,7 +110,6 @@ class AllQ
       Errno::ECONNREFUSED => ex
 
       _reconnect(ex, retry_interval)
-      _initialize_tubes if init
       retry
     end
 

@@ -64,7 +64,9 @@ class AllQ
         job = Job.new(id, q_server, tube, body, expired_count)
         return job
       rescue => ex
-        puts 'Invalid job data i'
+        puts "Server value: #{hash}"
+        puts "Can't create job, version mismatch?"
+        puts "Invalid job data #{ex.message}"
       end
 
 
