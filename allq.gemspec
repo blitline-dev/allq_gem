@@ -9,9 +9,9 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Jason"]
   spec.email         = ["jaciones@gmail.com"]
 
-  spec.summary       = %q{TODO: Write a short summary, because RubyGems requires one.}
-  spec.description   = %q{TODO: Write a longer description or delete this line.}
-  spec.homepage      = "TODO: Put your gem's website or public repo URL here."
+  spec.summary       = %q{Ruby library for using AllQ}
+  spec.description   = %q{Ruby gem for using AllQ}
+  spec.homepage      = "https://github.com/blitline-dev/allq_gem"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0").reject do |f|
