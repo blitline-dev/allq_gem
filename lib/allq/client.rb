@@ -33,11 +33,11 @@ class AllQ
 
     def done(job)
       raise "Can't set 'done' on a Job that is nil. Please check for Nil job before setting done." unless job
-      @done_action.snd(job_id: job.id, q_server: job.q_server)
+      @done_action.snd(job_id: job.id)
     end
 
     def touch(job)
-      @touch_action.snd(job_id: job.id, q_server: job.q_server)
+      @touch_action.snd(job_id: job.id)
     end
 
     def stats
@@ -45,7 +45,7 @@ class AllQ
     end
 
     def release(job)
-      @release_action.snd(job_id: job.id, q_server: job.q_server)
+      @release_action.snd(job_id: job.id)
     end
 
     def delete(job)

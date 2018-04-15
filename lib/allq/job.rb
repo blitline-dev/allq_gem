@@ -57,7 +57,7 @@ class AllQ
         body = hash.fetch('body')
         tube = hash.fetch('tube')
         expired_count = hash.fetch('expired_count')
-        job = Job.new(id, q_server, tube, body, expired_count)
+        job = Job.new(id, tube, body, expired_count)
         return job
       rescue => ex
         puts "Server value: #{hash}"
