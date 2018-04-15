@@ -1,10 +1,6 @@
 class AllQ
   class Put < AllQ::Base
 
-    def setup
-      @requires_q_server = false
-    end
-
     def snd(data)
       result = nil
       tube = data.delete('tube')

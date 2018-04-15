@@ -2,9 +2,8 @@ class AllQ
 
   class Job
     attr_accessor :id, :q_server, :body, :expired_count
-    def initialize(id, q_server, tube = nil, body = nil, expired_count = nil)
+    def initialize(id, tube = nil, body = nil, expired_count = nil)
       @body = body
-      @q_server = q_server
       @id = id
       @tube = tube
       @expired_count = expired_count
@@ -12,8 +11,7 @@ class AllQ
 
     def to_hash
       {
-        'id' => @id,
-        'q_server' => @q_server,
+        'job_id' => @id,
         'body' => @body,
         'tube' => @tube,
         'expired_count' => @expired_count
@@ -55,12 +53,10 @@ class AllQ
     def self.new_from_hash(hash)
       puts hash.inspect
       begin
-        id = hash.fetch('id')
+        id = hash.fetch('job_id')
         body = hash.fetch('body')
         tube = hash.fetch('tube')
         expired_count = hash.fetch('expired_count')
-        q_server = hash.fetch('q_server')
-        puts hash.inspect
         job = Job.new(id, q_server, tube, body, expired_count)
         return job
       rescue => ex

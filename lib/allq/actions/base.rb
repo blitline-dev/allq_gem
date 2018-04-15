@@ -3,7 +3,6 @@ require 'json'
 class AllQ
   # Base class for handling allq actions
   class Base
-    @requires_q_server = true
 
     def initialize(connection)
       @connection = connection
@@ -24,7 +23,6 @@ class AllQ
     def send_hash_as_json(data_hash)
       if @requires_q_server
         params = data_hash["params"]
-        raise data_hash["action"] + " must have q_server set" unless data_hash["params"]["q_server"]
       end
       transmit_data = data_hash.to_json
       result = nil
@@ -38,9 +36,8 @@ class AllQ
       result_hash = JSON.parse(result)
       job_info = result_hash["job"]
       job_id = job_info["job_id"]
-      q_server = job_info["q_server"]
 
-      job = Job.new(job_id, q_server)
+      job = Job.new(job_id)
       # -- Optional fields
       job.body = job_info["body"] if job_info["body"]
       job.expired_count = job_info["expired_count"] if job_info["expired_count"]

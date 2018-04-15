@@ -1,10 +1,6 @@
 class AllQ
   class Get < AllQ::Base
 
-    def setup
-      @requires_q_server = false
-    end
-
     def rcv(data)
       return nil if data.to_s == '' || data.to_s.strip == '{}'
 
