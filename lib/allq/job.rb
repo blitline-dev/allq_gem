@@ -51,7 +51,6 @@ class AllQ
     end
 
     def self.new_from_hash(hash)
-      puts hash.inspect
       begin
         id = hash.fetch('job_id')
         body = hash.fetch('body')

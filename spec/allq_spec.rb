@@ -4,7 +4,6 @@ RSpec.describe Allq do
 
   def stats_count(f, r = 0, rs = 0, b = 0, d = 0, p = 0)
     out_all = f.stats
-    puts out_all.inspect
     expect(out_all[gen_tube]['ready']).to eq(r)
     expect(out_all[gen_tube]['reserved']).to eq(rs)
     expect(out_all[gen_tube]['buried']).to eq(b)
