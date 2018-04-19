@@ -14,19 +14,61 @@ class AllQ
       @stats_action = AllQ::Stats.new(@connection)
       @release_action = AllQ::Release.new(@connection)
       @touch_action = AllQ::Touch.new(@connection)
+      @kick_action = AllQ::Kick.new(@connection)
+      @bury_action = AllQ::Bury.new(@connection)
+      @clear_action = AllQ::Clear.new(@connection)
+      @peek_action = AllQ::Peek.new(@connection)
+      @delete_action = AllQ::Delete.new(@connection)
+      @parent_job_action = AllQ::ParentJob.new(@connection)
+    end
+
+    def parent_job(body, tube, ttl: 3600, delay: 0, parent_id: nil, priority: 5, limit: nil, noop: false)
+      data = {
+        'body' => body,
+        'tube' => tube,
+        'delay' => delay,
+        'ttl' => ttl,
+        'priority' => priority,
+        'parent_id' => parent_id,
+        'limit' => limit,
+        'noop' => noop
+      }
+      @parent_job_action.snd(data)
+    end
+
+    def kick(tube_name)
+      @kick_action.snd(tube: tube_name)
+    end
+
+    def clear(cache_type = "cache_type", value = "all")
+      @clear_action.snd(cache_type: :all)
+    end
+
+    def peek(tube_name)
+      @peek_action.snd(tube: tube_name, buried: false)
+    end
+
+    def peek_buried(tube_name)
+      @peek_action.snd(tube: tube_name, buried: true)
+    end
+
+    def bury(job)
+      raise "Can't 'bury' a Job that is nil. Please check for Nil job before burying." unless job
+      @bury_action.snd(job_id: job.id)
     end
 
     def get(tube_name)
       @get_action.snd(tube_name)
     end
 
-    def put(body, tube, delay = 0, ttl = 3600, priority = 5)
+    def put(body, tube, ttl: 3600, delay: 0, parent_id: nil, priority: 5)
       data = {
         'body' => body,
         'tube' => tube,
         'delay' => delay,
         'ttl' => ttl,
-        'priority' => priority
+        'priority' => priority,
+        'parent_id' => parent_id
       }
       @put_action.snd(data)
     end
@@ -37,6 +79,7 @@ class AllQ
     end
 
     def touch(job)
+      raise "Can't 'touch' a Job that is nil. Please check for Nil job before 'touch'." unless job
       @touch_action.snd(job_id: job.id)
     end
 
@@ -45,14 +88,10 @@ class AllQ
     end
 
     def release(job)
+      raise "Can't 'release' a Job that is nil." unless job
       @release_action.snd(job_id: job.id)
     end
 
-    def delete(job)
-    end
-
-    def kick(job)
-    end
 
   end
 end

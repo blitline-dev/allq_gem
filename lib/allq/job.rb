@@ -1,7 +1,7 @@
 class AllQ
 
   class Job
-    attr_accessor :id, :q_server, :body, :expired_count
+    attr_accessor :id, :body, :expired_count
     def initialize(id, tube = nil, body = nil, expired_count = nil)
       @body = body
       @id = id

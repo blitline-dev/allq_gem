@@ -3,7 +3,7 @@
   require_relative "allq/#{f}"
 end
 
-%w(base get delete done put release stats touch).each do |f|
+%w(base get delete done put release stats touch kick peek clear bury parent_job).each do |f|
   require_relative "allq/actions/#{f}"
 end
 
