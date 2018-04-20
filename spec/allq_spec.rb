@@ -19,6 +19,20 @@ RSpec.describe Allq do
     'rspec-test-tube'
   end
 
+  it 'release delay works' do
+    f = AllQ::Client.instance
+    f.clear
+    f.put(gen_body, gen_tube)
+    sleep(1)
+    j2 = f.get(gen_tube)
+    j2.release(3)
+    sleep(1)
+    stats_count(f, 0, 0, 0, 1)
+    sleep(5)
+    stats_count(f, 1, 0, 0, 0)
+    f.clear
+  end
+
   it 'delay works' do
     f = AllQ::Client.instance
     f.clear

@@ -40,7 +40,8 @@ class AllQ
       job = Job.new(job_id)
       # -- Optional fields
       job.body = job_info["body"] if job_info["body"]
-      job.expired_count = job_info["expired_count"] if job_info["expired_count"]
+      job.expireds = job_info["expireds"] if job_info["expireds"]
+      job.releases = job_info["releases"] if job_info["releases"]
       return job
     end
 

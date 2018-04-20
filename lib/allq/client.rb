@@ -87,9 +87,9 @@ class AllQ
       @stats_action.snd(nil)
     end
 
-    def release(job)
+    def release(job, delay)
       raise "Can't 'release' a Job that is nil." unless job
-      @release_action.snd(job_id: job.id)
+      @release_action.snd(job_id: job.id, delay: delay)
     end
 
 

@@ -1,12 +1,13 @@
 class AllQ
 
   class Job
-    attr_accessor :id, :body, :expired_count
-    def initialize(id, tube = nil, body = nil, expired_count = nil)
+    attr_accessor :id, :body, :expireds, :releases
+    def initialize(id, tube = nil, body = nil, expireds = nil, releases = nil)
       @body = body
       @id = id
       @tube = tube
-      @expired_count = expired_count
+      @expireds = expireds
+      @releases = releases
     end
 
     def to_hash
@@ -14,7 +15,8 @@ class AllQ
         'job_id' => @id,
         'body' => @body,
         'tube' => @tube,
-        'expired_count' => @expired_count
+        'expireds' => @expireds,
+        'releases' => @releases
       }
     end
 
@@ -30,8 +32,8 @@ class AllQ
       AllQ::Client.instance.touch(self)
     end
 
-    def release
-      AllQ::Client.instance.release(self)
+    def release(delay = 0)
+      AllQ::Client.instance.release(self, delay)
     end
 
     def bury
@@ -50,13 +52,21 @@ class AllQ
       to_json.to_json
     end
 
+    def stats
+      {
+        "releases" => @releases,
+        "expireds" => @expireds
+      }
+    end
+
     def self.new_from_hash(hash)
       begin
         id = hash.fetch('job_id')
         body = hash.fetch('body')
         tube = hash.fetch('tube')
-        expired_count = hash.fetch('expired_count')
-        job = Job.new(id, tube, body, expired_count)
+        expireds = hash.fetch('expireds')
+        releases = hash.fetch('releases')
+        job = Job.new(id, tube, body, expireds, releases)
         return job
       rescue => ex
         puts "Server value: #{hash}"
