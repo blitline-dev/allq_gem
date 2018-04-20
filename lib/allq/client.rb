@@ -22,7 +22,7 @@ class AllQ
       @parent_job_action = AllQ::ParentJob.new(@connection)
     end
 
-    def parent_job(body, tube, ttl: 3600, delay: 0, parent_id: nil, priority: 5, limit: nil, noop: false)
+    def parent_job(tube, body, ttl: 3600, delay: 0, parent_id: nil, priority: 5, limit: nil, noop: false)
       data = {
         'body' => body,
         'tube' => tube,
@@ -61,7 +61,7 @@ class AllQ
       @get_action.snd(tube_name)
     end
 
-    def put(body, tube, ttl: 3600, delay: 0, parent_id: nil, priority: 5)
+    def put(tube, body, ttl: 3600, delay: 0, parent_id: nil, priority: 5)
       data = {
         'body' => body,
         'tube' => tube,
