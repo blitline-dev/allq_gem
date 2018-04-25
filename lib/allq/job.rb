@@ -43,7 +43,6 @@ class AllQ
     def to_json
       {
         id: @id,
-        q_server: @q_server,
         body: @body
       }
     end

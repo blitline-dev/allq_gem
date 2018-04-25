@@ -21,9 +21,6 @@ class AllQ
     end
 
     def send_hash_as_json(data_hash)
-      if @requires_q_server
-        params = data_hash["params"]
-      end
       transmit_data = data_hash.to_json
       result = nil
       @connection.transmit(transmit_data) do |response|

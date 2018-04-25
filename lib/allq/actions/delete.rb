@@ -10,7 +10,7 @@ class AllQ
       return JSON.parse(result)
     end
 
-    def base_send(job_id, q_server)
+    def base_send(job_id)
       {
         'action' => 'delete',
         'params' => {

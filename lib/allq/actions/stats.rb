@@ -2,7 +2,6 @@ class AllQ
   class Stats < AllQ::Base
 
     def setup
-      @requires_q_server = false
     end
 
     def rcv(data)
