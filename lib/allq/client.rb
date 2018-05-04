@@ -83,8 +83,8 @@ class AllQ
       @touch_action.snd(job_id: job.id)
     end
 
-    def stats
-      @stats_action.snd(nil)
+    def stats(breakout = false)
+      v = @stats_action.snd(breakout: breakout)
     end
 
     def release(job, delay)

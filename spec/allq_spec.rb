@@ -141,6 +141,24 @@ RSpec.describe Allq do
     stats_count(f)
   end
 
+
+  it 'put-get-stats-breakout works' do
+    f = AllQ::Client.instance
+    f.put(gen_tube, gen_body)
+    f.put(gen_tube, gen_body)
+    sleep(1)
+    stats_count(f, 2, 0, 0)
+    j1 = f.get(gen_tube)
+    stats_count(f, 1, 1, 0)
+    j2 = f.get(gen_tube)
+    stats_count(f, 0, 2, 0)
+    j1.done
+    j2.done
+    out = f.stats(true)
+    expect(out.values.first["ready"]).to eq(0)
+    stats_count(f)
+  end
+
   it 'handles parent jobs properly' do
     f = AllQ::Client.instance
     f.clear

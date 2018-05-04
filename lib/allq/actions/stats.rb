@@ -4,13 +4,25 @@ class AllQ
     def setup
     end
 
+    def snd(data)
+      send_data = base_send(data)
+      @breakout = data ? data[:breakout].to_s == "true" : false
+      response = send_hash_as_json(send_data)
+      rcv(response)
+    end
+
+
     def rcv(data)
       return nil if data.to_s == '' || data.to_s.strip == '{}'
       results = JSON.parse(data)
       stats = {}
-      results.each do |server, data|
-        data.each do |tube, tube_data|
-          stats[tube] = merge_tube_data(stats[tube], tube_data)
+      results.each do |server, s_data|
+        s_data.each do |tube, tube_data|
+          if @breakout
+            stats[server] = merge_tube_data(stats[server], tube_data)
+          else
+            stats[tube] = merge_tube_data(stats[tube], tube_data)
+          end
         end
       end
       stats
