@@ -16,13 +16,11 @@ class AllQ
       return nil if data.to_s == '' || data.to_s.strip == '{}'
       results = JSON.parse(data)
       stats = {}
+      return breakout(results) if @breakout
+
       results.each do |server, s_data|
         s_data.each do |tube, tube_data|
-          if @breakout
-            stats[server] = merge_tube_data(stats[server], tube_data)
-          else
-            stats[tube] = merge_tube_data(stats[tube], tube_data)
-          end
+          stats[tube] = merge_tube_data(stats[tube], tube_data)
         end
       end
       stats
@@ -37,6 +35,16 @@ class AllQ
         original_hash[k] = original_hash[k].to_i + v
       end
       original_hash
+    end
+
+    def breakout(results)
+      results.each do |server, s_data|
+        s_data.delete('global')
+        s_data.each do |tube, tube_data|
+          interize(tube_data)
+        end
+      end
+      results
     end
 
     def interize(hash)

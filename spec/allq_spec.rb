@@ -155,7 +155,7 @@ RSpec.describe Allq do
     j1.done
     j2.done
     out = f.stats(true)
-    expect(out.values.first["ready"]).to eq(0)
+    expect(out.values.first.values.first["ready"].to_i).to eq(0)
     stats_count(f)
   end
 
