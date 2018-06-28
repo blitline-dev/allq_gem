@@ -2,6 +2,11 @@ require 'allq'
 
 RSpec.describe Allq do
 
+  def client
+    return @client if @client
+    @client = AllQ::Client.new
+  end
+
   def stats_count(f, r = 0, rs = 0, b = 0, d = 0, p = 0)
     out_all = f.stats
     expect(out_all[gen_tube]['ready']).to eq(r)
@@ -20,7 +25,7 @@ RSpec.describe Allq do
   end
 
   it 'release delay works' do
-    f = AllQ::Client.instance
+    f = client
     f.clear
     f.put(gen_tube, gen_body)
     sleep(1)
@@ -34,7 +39,7 @@ RSpec.describe Allq do
   end
 
   it 'delay works' do
-    f = AllQ::Client.instance
+    f = client
     f.clear
     f.put(gen_tube, gen_body, delay: 3)
     sleep(1)
@@ -47,7 +52,7 @@ RSpec.describe Allq do
   end
 
   it 'ttl works' do
-    f = AllQ::Client.instance
+    f = client
     f.clear
     f.put(gen_tube, gen_body, ttl: 2)
     sleep(2)
@@ -61,7 +66,7 @@ RSpec.describe Allq do
   end
 
  it 'clear works' do
-    f = AllQ::Client.instance
+    f = client
     f.clear
     f.put(gen_tube, gen_body)
     sleep(1.0)
@@ -70,7 +75,7 @@ RSpec.describe Allq do
   end
 
   it 'put-get-bury-peek works' do
-    f = AllQ::Client.instance
+    f = client
     f.clear
     f.put(gen_tube, gen_body)
     sleep(1.0)
@@ -88,7 +93,7 @@ RSpec.describe Allq do
   end
 
   it 'put-get-bury-kick works' do
-    f = AllQ::Client.instance
+    f = client
     f.clear
     f.put(gen_tube, gen_body)
     sleep(1.0)
@@ -105,7 +110,7 @@ RSpec.describe Allq do
   end
 
   it 'put-get-bury works' do
-    f = AllQ::Client.instance
+    f = client
     f.clear
     f.put(gen_tube, gen_body)
     sleep(1.0)
@@ -116,7 +121,7 @@ RSpec.describe Allq do
   end
 
   it 'put-get-done works' do
-    f = AllQ::Client.instance
+    f = client
     f.clear
     f.put(gen_tube, gen_body)
     sleep(1.0)
@@ -127,7 +132,7 @@ RSpec.describe Allq do
   end
 
   it 'put-get-count works' do
-    f = AllQ::Client.instance
+    f = client
     f.put(gen_tube, gen_body)
     f.put(gen_tube, gen_body)
     sleep(1)
@@ -143,7 +148,7 @@ RSpec.describe Allq do
 
 
   it 'put-get-stats-breakout works' do
-    f = AllQ::Client.instance
+    f = client
     f.put(gen_tube, gen_body)
     f.put(gen_tube, gen_body)
     sleep(1)
@@ -160,7 +165,7 @@ RSpec.describe Allq do
   end
 
   it 'handles parent jobs properly' do
-    f = AllQ::Client.instance
+    f = client
     f.clear
     limit = 3
     parent_job = f.parent_job(gen_tube, gen_body, limit: limit)
@@ -182,7 +187,7 @@ RSpec.describe Allq do
   end
 
   it 'handles multiple waits' do
-    f = AllQ::Client.instance
+    f = client
     f.clear
     1.upto(2) do
       limit = 3

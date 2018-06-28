@@ -3,10 +3,9 @@ require 'singleton'
 class AllQ
   # Represents the client singleton
   class Client
-    include Singleton
 
     URL = ENV['ALLQ_CLIENT_URL'] || '127.0.0.1:7766'
-    def initialize(url)
+    def initialize(url = nil)
       url = URL if url.nil?
 
       @connection = AllQ::Connection.new(url)
