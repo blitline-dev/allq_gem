@@ -6,8 +6,10 @@ class AllQ
     include Singleton
 
     URL = ENV['ALLQ_CLIENT_URL'] || '127.0.0.1:7766'
-    def initialize
-      @connection = AllQ::Connection.new(URL)
+    def initialize(url)
+      url = URL if url.nil?
+
+      @connection = AllQ::Connection.new(url)
       @get_action = AllQ::Get.new(@connection)
       @put_action = AllQ::Put.new(@connection)
       @done_action = AllQ::Done.new(@connection)

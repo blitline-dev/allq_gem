@@ -106,9 +106,7 @@ class AllQ
     #
     def _with_retry(retry_interval, init=true, tries=MAX_RETRIES, &block)
       yield
-    rescue EOFError, Errno::ECONNRESET, Errno::EPIPE,
-      Errno::ECONNREFUSED => ex
-
+    rescue => ex
       _reconnect(ex, retry_interval)
       retry
     end
@@ -144,7 +142,7 @@ class AllQ
     # Raises an error to be triggered when the connection has failed
     # @raise [AllQ::NotConnected] AllQ is no longer connected
     def _raise_not_connected!
-      raise AllQ::NotConnected, "Connection to allq '#{@host}:#{@port}' is closed!"
+      raise "Connection to allq '#{@host}:#{@port}' is closed!"
     end
 
   end # Connection
