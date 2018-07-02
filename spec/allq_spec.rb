@@ -4,7 +4,7 @@ RSpec.describe Allq do
 
   def client
     return @client if @client
-    @client = AllQ::Client.new
+    @client = AllQ::Client.new("127.0.0.1:7766")
   end
 
   def stats_count(f, r = 0, rs = 0, b = 0, d = 0, p = 0)

@@ -1,13 +1,14 @@
 class AllQ
 
   class Job
-    attr_accessor :id, :body, :expireds, :releases
-    def initialize(id, tube = nil, body = nil, expireds = nil, releases = nil)
+    attr_accessor :id, :body, :expireds, :releases, :client
+    def initialize(id, client, tube = nil, body = nil, expireds = nil, releases = nil)
       @body = body
       @id = id
       @tube = tube
       @expireds = expireds
       @releases = releases
+      @client = client
     end
 
     def to_hash
@@ -21,23 +22,23 @@ class AllQ
     end
 
     def done
-      AllQ::Client.instance.done(self)
+      @client.done(self)
     end
 
     def delete
-      AllQ::Client.instance.delete(self)
+      @client.delete(self)
     end
 
     def touch
-      AllQ::Client.instance.touch(self)
+      @client.touch(self)
     end
 
     def release(delay = 0)
-      AllQ::Client.instance.release(self, delay)
+      @client.release(self, delay)
     end
 
     def bury
-      AllQ::Client.instance.bury(self)
+      @client.bury(self)
     end
 
     def to_json
@@ -58,14 +59,14 @@ class AllQ
       }
     end
 
-    def self.new_from_hash(hash)
+    def self.new_from_hash(hash, client)
       begin
         id = hash.fetch('job_id')
         body = hash.fetch('body')
         tube = hash.fetch('tube')
         expireds = hash.fetch('expireds')
         releases = hash.fetch('releases')
-        job = Job.new(id, tube, body, expireds, releases)
+        job = Job.new(id, client, tube, body, expireds, releases)
         return job
       rescue => ex
         puts "Server value: #{hash}"

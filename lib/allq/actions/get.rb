@@ -7,7 +7,7 @@ class AllQ
       result = JSON.parse(data)
       if result['job']
         return nil if result['job'].empty?
-        job = Job.new_from_hash(result['job'])
+        job = Job.new_from_hash(result['job'], @client)
         return job
       end
       nil

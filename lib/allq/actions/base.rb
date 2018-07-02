@@ -3,9 +3,11 @@ require 'json'
 class AllQ
   # Base class for handling allq actions
   class Base
+    attr_reader :connection, :client
 
-    def initialize(connection)
+    def initialize(connection, client)
       @connection = connection
+      @client = client
       setup
     end
 
@@ -34,7 +36,7 @@ class AllQ
       job_info = result_hash["job"]
       job_id = job_info["job_id"]
 
-      job = Job.new(job_id)
+      job = Job.new(job_id, @client)
       # -- Optional fields
       job.body = job_info["body"] if job_info["body"]
       job.expireds = job_info["expireds"] if job_info["expireds"]
