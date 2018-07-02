@@ -74,6 +74,11 @@ class AllQ
       @put_action.snd(data)
     end
 
+    def delete(job)
+      raise "Can't delete a Nil job" unless job
+      @delete_action.snd(job_id: job.id)
+    end
+
     def done(job)
       raise "Can't set 'done' on a Job that is nil. Please check for Nil job before setting done." unless job
       @done_action.snd(job_id: job.id)
