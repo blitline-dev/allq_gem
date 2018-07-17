@@ -6,9 +6,9 @@ class AllQ
 
     URL = ENV['ALLQ_CLIENT_URL'] || '127.0.0.1:7766'
     def initialize(url = nil)
-      url = URL if url.nil?
+      @url = URL if url.nil?
       @connection = nil
-      reload
+      reload!
     end
 
     def parent_job(tube, body, ttl: 3600, delay: 0, parent_id: nil, priority: 5, limit: nil, noop: false)
@@ -90,9 +90,9 @@ class AllQ
        @connection.close
     end
 
-    def reload
+    def reload!
       @connection.close if @connection
-      @connection = AllQ::Connection.new(url)
+      @connection = AllQ::Connection.new(@url)
       @get_action = AllQ::Get.new(@connection, self)
       @put_action = AllQ::Put.new(@connection, self)
       @done_action = AllQ::Done.new(@connection, self)
