@@ -6,7 +6,7 @@ class AllQ
 
     URL = ENV['ALLQ_CLIENT_URL'] || '127.0.0.1:7766'
     def initialize(url = nil)
-      @url = URL if url.nil?
+      @url = url.nil? ? URL : url
       @connection = nil
       reload!
     end
@@ -92,6 +92,7 @@ class AllQ
 
     def reload!
       @connection.close if @connection
+      puts "New --#{@url}"
       @connection = AllQ::Connection.new(@url)
       @get_action = AllQ::Get.new(@connection, self)
       @put_action = AllQ::Put.new(@connection, self)
