@@ -25,6 +25,7 @@ class AllQ
     def send_hash_as_json(data_hash)
       transmit_data = data_hash.to_json
       result = nil
+      puts "transmitting data: #{transmit_data}"
       @connection.transmit(transmit_data) do |response|
         result = response
       end

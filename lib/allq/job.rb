@@ -69,6 +69,7 @@ class AllQ
         job = Job.new(id, client, tube, body, expireds, releases)
         return job
       rescue => ex
+        puts caller
         puts "Server value: #{hash}"
         puts "Can't create job, version mismatch?"
         puts "Invalid job data #{ex.message}"

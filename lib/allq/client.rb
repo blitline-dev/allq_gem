@@ -7,20 +7,8 @@ class AllQ
     URL = ENV['ALLQ_CLIENT_URL'] || '127.0.0.1:7766'
     def initialize(url = nil)
       url = URL if url.nil?
-
-      @connection = AllQ::Connection.new(url)
-      @get_action = AllQ::Get.new(@connection, self)
-      @put_action = AllQ::Put.new(@connection, self)
-      @done_action = AllQ::Done.new(@connection, self)
-      @stats_action = AllQ::Stats.new(@connection, self)
-      @release_action = AllQ::Release.new(@connection, self)
-      @touch_action = AllQ::Touch.new(@connection, self)
-      @kick_action = AllQ::Kick.new(@connection, self)
-      @bury_action = AllQ::Bury.new(@connection, self)
-      @clear_action = AllQ::Clear.new(@connection, self)
-      @peek_action = AllQ::Peek.new(@connection, self)
-      @delete_action = AllQ::Delete.new(@connection, self)
-      @parent_job_action = AllQ::ParentJob.new(@connection, self)
+      @connection = nil
+      reload
     end
 
     def parent_job(tube, body, ttl: 3600, delay: 0, parent_id: nil, priority: 5, limit: nil, noop: false)
@@ -96,6 +84,27 @@ class AllQ
     def release(job, delay)
       raise "Can't 'release' a Job that is nil." unless job
       @release_action.snd(job_id: job.id, delay: delay)
+    end
+
+    def close
+       @connection.close
+    end
+
+    def reload
+      @connection.close if @connection
+      @connection = AllQ::Connection.new(url)
+      @get_action = AllQ::Get.new(@connection, self)
+      @put_action = AllQ::Put.new(@connection, self)
+      @done_action = AllQ::Done.new(@connection, self)
+      @stats_action = AllQ::Stats.new(@connection, self)
+      @release_action = AllQ::Release.new(@connection, self)
+      @touch_action = AllQ::Touch.new(@connection, self)
+      @kick_action = AllQ::Kick.new(@connection, self)
+      @bury_action = AllQ::Bury.new(@connection, self)
+      @clear_action = AllQ::Clear.new(@connection, self)
+      @peek_action = AllQ::Peek.new(@connection, self)
+      @delete_action = AllQ::Delete.new(@connection, self)
+      @parent_job_action = AllQ::ParentJob.new(@connection, self)
     end
 
 
