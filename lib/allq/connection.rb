@@ -48,7 +48,7 @@ class AllQ
     def transmit(command, options={}, &block)
       _with_retry(options[:retry_interval], options[:init]) do
         @mutex.synchronize do
-          _raise_not_connected! unless @connection
+          _raise_not_connected! unless @connection && !@connection.closed?
           @connection.puts(command.to_s)
           res = @connection.readline
           yield block.call(res)
