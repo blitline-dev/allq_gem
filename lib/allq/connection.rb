@@ -30,7 +30,6 @@ class AllQ
     #
     def initialize(address = '')
       @address = address || _host_from_env
-      @mutex = Mutex.new
       establish_connection
     rescue
       _raise_not_connected!
@@ -47,13 +46,20 @@ class AllQ
     #
     def transmit(command, options={}, &block)
       _with_retry(options[:retry_interval], options[:init]) do
-        @mutex.synchronize do
-          _raise_not_connected! unless @connection && !@connection.closed?
-          @connection.puts(command.to_s)
-          res = @connection.readline
-          yield block.call(res)
+        send_string = command.to_s
+        if send_string.include?("'")
+          puts "Single quotes not allow in JSON. This will probably error."
         end
+        res = call_socat(send_string)
+        _raise_not_connected if res.include?("Connection refused")
+        yield block.call(res)
       end
+    end
+
+    def call_socat(data)
+      cmd_string = "echo '#{data}' | socat - tcp4-connect:#{address}"
+      output = `#{cmd_string}`
+      return output
     end
 
     # Close connection with allq server.
@@ -62,10 +68,7 @@ class AllQ
     #  @conn.close
     #
     def close
-      if @connection
-        @connection.close
-        @connection = nil
-      end
+      # no_op
     end
 
     # Returns string representation of job.
@@ -74,7 +77,7 @@ class AllQ
     #  @conn.inspect
     #
     def to_s
-      "#<AllQ::Connection host=#{host.inspect} port=#{port.inspect}>"
+      "#<AllQ::Connection address=#{address}>"
     end
     alias :inspect :to_s
 
@@ -88,11 +91,6 @@ class AllQ
     #  establish_connection('localhost:3005')
     #
     def establish_connection
-      @address = address.first if address.is_a?(Array)
-      match = address.split(':')
-      @host, @port = match[0], Integer(match[1] || DEFAULT_PORT)
-
-      @connection = TCPSocket.new @host, @port
     end
 
     private
@@ -118,7 +116,6 @@ class AllQ
     # @param [Integer] tries The maximum number of attempts to reconnect
     def _reconnect(original_exception, retry_interval, tries=MAX_RETRIES)
       close
-      establish_connection
     rescue Errno::ECONNREFUSED
       tries -= 1
       if tries.zero?

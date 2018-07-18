@@ -59,6 +59,10 @@ class AllQ
       }
     end
 
+    def reload_client
+      @client.reload!
+    end
+
     def self.new_from_hash(hash, client)
       begin
         id = hash.fetch('job_id')
