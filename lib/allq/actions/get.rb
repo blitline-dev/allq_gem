@@ -1,6 +1,12 @@
 class AllQ
   class Get < AllQ::Base
 
+    def snd(data)
+      send_data = base_send(data)
+      response = send_hash_as_json(send_data, true)
+      rcv(response)
+    end
+
     def rcv(data)
       return nil if data.to_s == '' || data.to_s.strip == '{}'
 
