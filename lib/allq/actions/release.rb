@@ -5,7 +5,7 @@ class AllQ
       job_id = data[:job_id]
       delay = data[:delay] || 0
       send_data = base_send(job_id, delay)
-      response = send_hash_as_json(send_data)
+      response = send_hash_as_json(send_data, true)
       result = rcv(response)
       return result["release"] && result["release"]["job_id"]
     end

@@ -7,7 +7,7 @@ class AllQ
     def snd(data)
       send_data = base_send(data)
       @breakout = data ? data[:breakout].to_s == "true" : false
-      response = send_hash_as_json(send_data)
+      response = send_hash_as_json(send_data, true)
       rcv(response)
     end
 

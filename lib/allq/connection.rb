@@ -36,6 +36,22 @@ class AllQ
       _raise_not_connected!
     end
 
+    def socat(command, options={}, &block)
+      send_string = command.to_s
+      if send_string.include?("'")
+        puts "Single quotes not allow in JSON. This will probably error."
+      end
+      res = call_socat(send_string)
+      _raise_not_connected if res.include?("Connection refused")
+      yield block.call(res)
+    end
+
+    def call_socat(data)
+      cmd_string = "echo '#{data}' | socat - tcp4-connect:#{@address}"
+      output = `#{cmd_string}`
+      return output
+    end
+
     # Send commands to allq server via connection.
     #
     # @param [String] command AllQ command

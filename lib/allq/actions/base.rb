@@ -24,13 +24,21 @@ class AllQ
       data
     end
 
-    def send_hash_as_json(data_hash)
+    def send_hash_as_json(data_hash, ignore_failure = false)
       transmit_data = data_hash.to_json
       result = nil
       puts "transmitting data: #{transmit_data}" if ALLQ_DEBUG_DATA
-      @connection.transmit(transmit_data) do |response|
-        result = response
+      if ignore_failure
+        @connection.socat(transmit_data) do |response|
+          result = response
+        end
+        results = "{}" if results.to_s == ""
+      else
+        @connection.transmit(transmit_data) do |response|
+          result = response
+        end
       end
+
       result
     end
 

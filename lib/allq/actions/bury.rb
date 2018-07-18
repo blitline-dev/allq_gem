@@ -5,7 +5,7 @@ class AllQ
       job_id = data[:job_id]
 
       send_data = base_send(job_id)
-      response = send_hash_as_json(send_data)
+      response = send_hash_as_json(send_data, true)
       result = rcv(response)
       return result
     end

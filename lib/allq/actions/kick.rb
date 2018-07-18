@@ -6,7 +6,7 @@ class AllQ
       tube = data[:tube]
 
       send_data = base_send(tube)
-      response = send_hash_as_json(send_data)
+      response = send_hash_as_json(send_data, true)
       rcv(response)
     end
 
