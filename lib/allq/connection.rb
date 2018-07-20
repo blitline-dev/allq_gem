@@ -46,8 +46,8 @@ class AllQ
       yield block.call(res)
     end
 
-    def call_socat(data)
-      cmd_string = "echo '#{data}' | socat - tcp4-connect:#{@address}"
+    def call_socat(data, timeout = 1.0)
+      cmd_string = "echo '#{data}' | socat -t #{timeout} - tcp4-connect:#{@address}"
       output = `#{cmd_string}`
       return output
     end
@@ -64,9 +64,7 @@ class AllQ
     def transmit(command, options={}, &block)
       _with_retry(options[:retry_interval], options[:init]) do
         @mutex.synchronize do
-          _raise_not_connected! unless @connection && !@connection.closed?
-          @connection.puts(command.to_s)
-          res = @connection.readline
+          res = call_socat(command.to_s, 20.0)
           yield block.call(res)
         end
       end
