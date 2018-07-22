@@ -5,6 +5,7 @@ RSpec.describe Allq do
   def client
     return @client if @client
     @client = AllQ::Client.new("127.0.0.1:7766")
+    return @client
   end
 
   def stats_count(f, r = 0, rs = 0, b = 0, d = 0, p = 0)
@@ -22,6 +23,13 @@ RSpec.describe Allq do
 
   def gen_tube
     'rspec-test-tube'
+  end
+
+  it 'ping works' do
+    json = { action: "ping", params: {}}
+    output = "echo '#{json.to_json}' | socat -t 1.0 - tcp4-connect:127.0.0.1:7766"
+    results = `#{output}`
+    expect(results.size).to be > 0
   end
 
   it 'release delay works' do

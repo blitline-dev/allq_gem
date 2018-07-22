@@ -30,8 +30,6 @@ class AllQ
     #
     def initialize(address = '')
       @address = address || _host_from_env
-      @mutex = Mutex.new
-      establish_connection
     rescue
       _raise_not_connected!
     end
@@ -46,7 +44,7 @@ class AllQ
       yield block.call(res)
     end
 
-    def call_socat(data, timeout = 1.0)
+    def call_socat(data, timeout = 3.0)
       cmd_string = "echo '#{data}' | socat -t #{timeout} - tcp4-connect:#{@address}"
       output = `#{cmd_string}`
       return output
@@ -63,10 +61,9 @@ class AllQ
     #
     def transmit(command, options={}, &block)
       _with_retry(options[:retry_interval], options[:init]) do
-        @mutex.synchronize do
-          res = call_socat(command.to_s, 20.0)
-          yield block.call(res)
-        end
+        res = call_socat(command.to_s, 20.0)
+        raise "Socat failed after 20 seconds" if res.to_s == ""
+        yield block.call(res)
       end
     end
 
@@ -76,10 +73,6 @@ class AllQ
     #  @conn.close
     #
     def close
-      if @connection
-        @connection.close
-        @connection = nil
-      end
     end
 
     # Returns string representation of job.
@@ -102,11 +95,6 @@ class AllQ
     #  establish_connection('localhost:3005')
     #
     def establish_connection
-      @address = address.first if address.is_a?(Array)
-      match = address.split(':')
-      @host, @port = match[0], Integer(match[1] || DEFAULT_PORT)
-
-      @connection = TCPSocket.new @host, @port
     end
 
     private
@@ -121,6 +109,7 @@ class AllQ
     def _with_retry(retry_interval, init=true, tries=MAX_RETRIES, &block)
       yield
     rescue => ex
+      sleep(tries) if tries > 0
       _reconnect(ex, retry_interval)
       retry
     end

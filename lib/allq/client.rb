@@ -92,7 +92,7 @@ class AllQ
 
     def reload!
       @connection.close if @connection
-      puts "New --#{@url}"
+      puts "AllQ Connection Started --#{@url}"
       @connection = AllQ::Connection.new(@url)
       @get_action = AllQ::Get.new(@connection, self)
       @put_action = AllQ::Put.new(@connection, self)
