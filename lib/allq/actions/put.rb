@@ -24,6 +24,7 @@ class AllQ
       base['params']['ttl'] = options['ttl'] if options['ttl']
       base['params']['delay'] = options['delay'] if options['delay']
       base['params']['parent_id'] = options['parent_id'] if options['parent_id']
+      base['params']['priority'] = options['priority'] if options['priority']
       return base
     end
   end

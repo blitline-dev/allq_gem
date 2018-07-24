@@ -1,5 +1,10 @@
 require 'allq'
 
+  RSpec.configure do |config|
+    config.filter_run :focus => true
+    config.run_all_when_everything_filtered = true
+  end
+
 RSpec.describe Allq do
 
   def client
@@ -79,6 +84,38 @@ RSpec.describe Allq do
     f.put(gen_tube, gen_body)
     sleep(1.0)
     stats_count(f, 1, 0, 0, 0 , 0)
+    f.clear
+  end
+
+  it 'priority works' do
+    f = client
+    f.clear
+    low_pri_body = gen_body
+    high_pri_body = gen_body
+
+    f.put(gen_tube, low_pri_body, priority: 5)
+    f.put(gen_tube, high_pri_body, priority: 2)
+    f.put(gen_tube, high_pri_body, priority: 2)
+    f.put(gen_tube, high_pri_body, priority: 2)
+    f.put(gen_tube, low_pri_body, priority: 5)
+    f.put(gen_tube, gen_body, priority: 5)
+    f.put(gen_tube, low_pri_body, priority: 5)
+    f.put(gen_tube, gen_body, priority: 5)
+    stats_count(f, 8, 0, 0, 0 , 0)
+    j2 = f.get(gen_tube)
+    expect(j2.body).to eq(high_pri_body)
+    j2 = f.get(gen_tube)
+    expect(j2.body).to eq(high_pri_body)
+    j2 = f.get(gen_tube)
+    expect(j2.body).to eq(high_pri_body)
+
+    f.clear
+    low_pri_body = gen_body
+    high_pri_body = gen_body
+    f.put(gen_tube, high_pri_body, priority: 2)
+    f.put(gen_tube, low_pri_body, priority: 5)
+    j2 = f.get(gen_tube)
+    expect(j2.body).to eq(high_pri_body)
     f.clear
   end
 
