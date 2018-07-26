@@ -13,6 +13,19 @@ RSpec.describe Allq do
     return @client
   end
 
+  def get_until_valid(tube_name)
+    f = client
+    g = f.get(tube_name)
+    return g if g
+
+    c = 0
+    until g = f.get(tube_name) do
+      c += 1
+      raise "get_until_valid timed out" if c > 10
+    end
+    return g
+  end
+
   def stats_count(f, r = 0, rs = 0, b = 0, d = 0, p = 0)
     out_all = f.stats
     expect(out_all[gen_tube]['ready']).to eq(r)
@@ -42,7 +55,7 @@ RSpec.describe Allq do
     f.clear
     f.put(gen_tube, gen_body)
     sleep(1)
-    j2 = f.get(gen_tube)
+    j2 = get_until_valid(gen_tube)
     j2.release(3)
     sleep(1)
     stats_count(f, 0, 0, 0, 1)
@@ -59,6 +72,7 @@ RSpec.describe Allq do
     stats_count(f, 0, 0, 0, 1)
     sleep(5)
     stats_count(f, 1, 0, 0, 0)
+    puts f.stats
     j2 = f.get(gen_tube)
     j2.done
     stats_count(f)
@@ -67,14 +81,14 @@ RSpec.describe Allq do
   it 'ttl works' do
     f = client
     f.clear
-    f.put(gen_tube, gen_body, ttl: 2)
+    f.put(gen_tube, gen_body, ttl: 2).inspect
     sleep(2)
     stats_count(f, 1, 0, 0, 0)
-    j2 = f.get(gen_tube)
+    j2 = get_until_valid(gen_tube)
     stats_count(f, 0, 1, 0, 0)
     sleep(8)
     stats_count(f, 1, 0, 0, 0)
-    j2 = f.get(gen_tube)
+    j2 = get_until_valid(gen_tube)
     j2.done
   end
 
@@ -112,7 +126,7 @@ RSpec.describe Allq do
     f.clear
     low_pri_body = gen_body
     high_pri_body = gen_body
-    f.put(gen_tube, high_pri_body, priority: 2)
+    f.put(get, high_pri_body, priority: 2)
     f.put(gen_tube, low_pri_body, priority: 5)
     j2 = f.get(gen_tube)
     expect(j2.body).to eq(high_pri_body)
@@ -124,14 +138,14 @@ RSpec.describe Allq do
     f.clear
     f.put(gen_tube, gen_body)
     sleep(1.0)
-    job = f.get(gen_tube)
+    job = get_until_valid(gen_tube)
     job.bury
     stats_count(f, 0, 0, 1, 0, 0)
     f.peek_buried(gen_tube)
     stats_count(f, 0, 0, 1, 0, 0)
     f.kick(gen_tube)
     stats_count(f, 1, 0, 0, 0, 0)
-    job = f.get(gen_tube)
+    job = get_until_valid(gen_tube)
     stats_count(f, 0, 1, 0, 0, 0)
     job.done
     stats_count(f, 0, 0, 0, 0, 0)
@@ -142,12 +156,12 @@ RSpec.describe Allq do
     f.clear
     f.put(gen_tube, gen_body)
     sleep(1.0)
-    job = f.get(gen_tube)
+    job = get_until_valid(gen_tube)
     job.bury
     stats_count(f, 0, 0, 1, 0, 0)
     f.kick(gen_tube)
     stats_count(f, 1, 0, 0, 0, 0)
-    job = f.get(gen_tube)
+    job = get_until_valid(gen_tube)
     stats_count(f, 0, 1, 0, 0, 0)
     job.done
     stats_count(f, 0, 0, 0, 0, 0)
@@ -159,7 +173,7 @@ RSpec.describe Allq do
     f.clear
     f.put(gen_tube, gen_body)
     sleep(1.0)
-    job = f.get(gen_tube)
+    job = get_until_valid(gen_tube)
     job.bury
     stats_count(f, 0, 0, 1, 0, 0)
     f.clear
@@ -170,7 +184,7 @@ RSpec.describe Allq do
     f.clear
     f.put(gen_tube, gen_body)
     sleep(1.0)
-    job = f.get(gen_tube)
+    job = get_until_valid(gen_tube)
     job.done
     stats_count(f, 0, 0, 0, 0, 0)
     f.clear
@@ -182,9 +196,9 @@ RSpec.describe Allq do
     f.put(gen_tube, gen_body)
     sleep(1)
     stats_count(f, 2, 0, 0)
-    j1 = f.get(gen_tube)
+    j1 = get_until_valid(gen_tube)
     stats_count(f, 1, 1, 0)
-    j2 = f.get(gen_tube)
+    j2 = get_until_valid(gen_tube)
     stats_count(f, 0, 2, 0)
     j1.done
     j2.done
@@ -198,9 +212,9 @@ RSpec.describe Allq do
     f.put(gen_tube, gen_body)
     sleep(1)
     stats_count(f, 2, 0, 0)
-    j1 = f.get(gen_tube)
+    j1 = get_until_valid(gen_tube)
     stats_count(f, 1, 1, 0)
-    j2 = f.get(gen_tube)
+    j2 = get_until_valid(gen_tube)
     stats_count(f, 0, 2, 0)
     j1.done
     j2.done
@@ -222,11 +236,11 @@ RSpec.describe Allq do
     sleep(1)
     stats_count(f, limit, 0, 0, 0, 1)
     1.upto(limit) do
-      f.get(gen_tube).done
+      get_until_valid(gen_tube).done
     end
     sleep(6)
     stats_count(f, 1, 0, 0, 0, 0)
-    new_job = f.get(gen_tube)
+    new_job = get_until_valid(gen_tube)
     expect(parent_job.id).to eq(new_job.id)
     new_job.done
   end
@@ -255,17 +269,17 @@ RSpec.describe Allq do
       sleep(1)
       stats_count(f, 6, 0, 0, 0, 3)
       sleep(1)
-      f.get(gen_tube).done
-      f.get(gen_tube).done
-      f.get(gen_tube).done
+      get_until_valid(gen_tube).done
+      get_until_valid(gen_tube).done
+      get_until_valid(gen_tube).done
       sleep(1)
       stats_count(f, 3, 0, 0, 0, 2)
-      f.get(gen_tube).done
-      f.get(gen_tube).done
-      f.get(gen_tube).done
+      get_until_valid(gen_tube).done
+      get_until_valid(gen_tube).done
+      get_until_valid(gen_tube).done
       sleep(6)
       stats_count(f, 1, 0, 0, 0, 0)
-      last_job_id = f.get(gen_tube).id
+      last_job_id = get_until_valid(gen_tube).id
       expect(master_job.id).to eq(last_job_id)
       master_job.done
       # -- Cleanup
