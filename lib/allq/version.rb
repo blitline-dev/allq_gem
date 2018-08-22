@@ -1,3 +1,3 @@
 module Allq
-  VERSION = "0.3.92"
+  VERSION = "0.3.93"
 end

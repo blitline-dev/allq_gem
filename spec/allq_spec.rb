@@ -118,17 +118,20 @@ RSpec.describe Allq do
     stats_count(f, 8, 0, 0, 0 , 0)
     j2 = f.get(gen_tube)
     expect(j2.body).to eq(high_pri_body)
+    j2.done
     j2 = f.get(gen_tube)
     expect(j2.body).to eq(high_pri_body)
+    j2.done
     j2 = f.get(gen_tube)
     expect(j2.body).to eq(high_pri_body)
-
+    j2.done
     f.clear
     low_pri_body = gen_body
     high_pri_body = gen_body
-    f.put(get, high_pri_body, priority: 2)
+    f.put(gen_tube, high_pri_body, priority: 2)
     f.put(gen_tube, low_pri_body, priority: 5)
     j2 = f.get(gen_tube)
+    j2.done
     expect(j2.body).to eq(high_pri_body)
     f.clear
   end
@@ -141,9 +144,9 @@ RSpec.describe Allq do
     job = get_until_valid(gen_tube)
     job.bury
     stats_count(f, 0, 0, 1, 0, 0)
-    f.peek_buried(gen_tube)
+    j = f.peek_buried(gen_tube)
     stats_count(f, 0, 0, 1, 0, 0)
-    f.kick(gen_tube)
+    j.kick
     stats_count(f, 1, 0, 0, 0, 0)
     job = get_until_valid(gen_tube)
     stats_count(f, 0, 1, 0, 0, 0)
@@ -159,7 +162,7 @@ RSpec.describe Allq do
     job = get_until_valid(gen_tube)
     job.bury
     stats_count(f, 0, 0, 1, 0, 0)
-    f.kick(gen_tube)
+    job.kick
     stats_count(f, 1, 0, 0, 0, 0)
     job = get_until_valid(gen_tube)
     stats_count(f, 0, 1, 0, 0, 0)

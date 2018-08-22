@@ -3,18 +3,19 @@ class AllQ
 
     def snd(data)
       result = nil
-      tube = data[:tube]
+      job = data[:job]
 
-      send_data = base_send(tube)
+      send_data = base_send(job)
       response = send_hash_as_json(send_data, true)
       rcv(response)
     end
 
-    def base_send(tube)
+    def base_send(job)
       {
         'action' => 'kick',
         'params' => {
-          'tube' => tube
+          'job_id' => job.id,
+          'tube' => job.tube
         }
       }
     end

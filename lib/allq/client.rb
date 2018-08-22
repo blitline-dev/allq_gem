@@ -25,8 +25,8 @@ class AllQ
       @parent_job_action.snd(data)
     end
 
-    def kick(tube_name)
-      @kick_action.snd(tube: tube_name)
+    def kick(job)
+      @kick_action.snd(job: job)
     end
 
     def clear(cache_type = "cache_type", value = "all")

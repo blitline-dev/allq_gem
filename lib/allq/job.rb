@@ -1,7 +1,7 @@
 class AllQ
 
   class Job
-    attr_accessor :id, :body, :expireds, :releases, :client
+    attr_accessor :id, :body, :expireds, :releases, :client, :tube
     def initialize(id, client, tube = nil, body = nil, expireds = nil, releases = nil)
       @body = body
       @id = id
@@ -31,6 +31,10 @@ class AllQ
 
     def touch
       @client.touch(self)
+    end
+
+    def kick
+      @client.kick(self)
     end
 
     def release(delay = 0)
