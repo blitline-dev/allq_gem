@@ -136,7 +136,7 @@ RSpec.describe Allq do
     f.clear
   end
 
-  it 'put-get-bury-peek works' do
+  it 'put-get-bury-peek-done works' do
     f = client
     f.clear
     f.put(gen_tube, gen_body)
