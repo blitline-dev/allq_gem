@@ -25,6 +25,14 @@ class AllQ
       @parent_job_action.snd(data)
     end
 
+    def add_server(server_url)
+      @add_server_action.snd(server_url: server_url)
+    end
+
+    def drain(server_id)
+      @drain_action.snd(server_id: server_id)
+    end
+
     def kick(job)
       @kick_action.snd(job: job)
     end
@@ -95,6 +103,8 @@ class AllQ
       puts "AllQ Connection Started --#{@url}"
       @connection = AllQ::Connection.new(@url)
       @get_action = AllQ::Get.new(@connection, self)
+      @drain_action = AllQ::Drain.new(@connection, self)
+      @add_server_action = AllQ::AddServer.new(@connection, self)
       @put_action = AllQ::Put.new(@connection, self)
       @done_action = AllQ::Done.new(@connection, self)
       @stats_action = AllQ::Stats.new(@connection, self)

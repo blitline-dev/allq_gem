@@ -23,6 +23,7 @@ class AllQ
           'delay' => delay
         }
       }
+      
     end
   end
 end
