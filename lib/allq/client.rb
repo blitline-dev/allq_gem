@@ -91,7 +91,12 @@ class AllQ
 
     def release(job, delay)
       raise "Can't 'release' a Job that is nil." unless job
+      raise "Delay must be a int" unless delay.is_a?(Integer)
       @release_action.snd(job_id: job.id, delay: delay)
+    end
+
+    def throttle(tube, tps)
+      @throttle_action.snd(name: tube, tps: tps)
     end
 
     def close
@@ -116,6 +121,7 @@ class AllQ
       @peek_action = AllQ::Peek.new(@connection, self)
       @delete_action = AllQ::Delete.new(@connection, self)
       @parent_job_action = AllQ::ParentJob.new(@connection, self)
+      @throttle_action = AllQ::Throttle.new(@connection, self)
     end
 
 

@@ -45,9 +45,15 @@ RSpec.describe Allq do
 
   it 'ping works' do
     json = { action: "ping", params: {}}
-    output = "echo '#{json.to_json}' | socat -t 1.0 - tcp4-connect:127.0.0.1:7766"
+    output = "echo '#{json.to_json}' | socat -t 10.0 - tcp4-connect:127.0.0.1:7766"
     results = `#{output}`
     expect(results.size).to be > 0
+  end
+
+  it 'throttle accepted by server' do
+    f = client
+    f.clear
+    f.throttle("throttled", 10)
   end
 
   it 'release delay works' do
@@ -290,26 +296,26 @@ RSpec.describe Allq do
     end
   end
 
-  it 'handles_drain' do
-    f = client
-    puts f.stats
-    server_id = f.stats(true).keys[0]
-    f.drain(server_id)
-    sleep(7)
-    begin
-      f.stats
-    rescue ex
-      puts "OK"
-    end
-    f.add_server("127.0.0.1:5555")
-    sleep(1)
-    f.clear
-    f.put(gen_tube, gen_body)
-    sleep(1.0)
-    job = get_until_valid(gen_tube)
-    stats_count(f, 0, 1, 0, 0, 0)
-    job.done
-    stats_count(f, 0, 0, 0, 0, 0)
-  end
+#  it 'handles_drain' do
+#    f = client
+#    puts f.stats
+#    server_id = f.stats(true).keys[0]
+#    f.drain(server_id)
+#    sleep(7)
+#    begin
+#      f.stats
+#    rescue ex
+#      puts "OK"
+#    end
+#    f.add_server("127.0.0.1:5555")
+#    sleep(1)
+#    f.clear
+#    f.put(gen_tube, gen_body)
+#    sleep(1.0)
+#    job = get_until_valid(gen_tube)
+#    stats_count(f, 0, 1, 0, 0, 0)
+#    job.done
+#    stats_count(f, 0, 0, 0, 0, 0)
+#  end
 
 end
